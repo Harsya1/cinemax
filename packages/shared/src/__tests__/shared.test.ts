@@ -23,6 +23,9 @@ import {
   publicNowPlayingResponseSchema,
   holdSeatsInputSchema,
   seatMapResponseSchema,
+  paymentProcessSchema,
+  calculatePointsEarned,
+  customerProfileUpdateSchema,
 } from '../index.js';
 
 test('BRAND exposes CINEMAX identity and booking prefix', () => {
@@ -293,4 +296,25 @@ test('booking schemas validate hold request rules (1-6 seats, no duplicates) and
     ],
   });
   assert.equal(sm.success, true);
+});
+
+test('payment schemas and point calculators validate payment methods and points per studio type', () => {
+  const validPayment = paymentProcessSchema.parse({
+    bookingCode: 'CX-ABCDEF',
+    paymentMethod: 'qris',
+  });
+  assert.equal(validPayment.paymentMethod, 'qris');
+
+  // Points calculation: 2 tickets in Premier = 2 * 15 = 30 pts
+  assert.equal(calculatePointsEarned('premier', 2), 30);
+  assert.equal(calculatePointsEarned('3d', 3), 39);
+  assert.equal(calculatePointsEarned('regular', 1), 10);
+
+  const profileUpdate = customerProfileUpdateSchema.parse({
+    name: 'Budi Baru',
+    phoneNumber: '08129999',
+    newPassword: 'NewPassword123!',
+  });
+  assert.equal(profileUpdate.name, 'Budi Baru');
+  assert.equal(profileUpdate.newPassword, 'NewPassword123!');
 });

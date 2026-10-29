@@ -6,3 +6,4 @@ export * from './schemas/admin.js';
 export * from './schemas/operations.js';
 export * from './schemas/public-movies.js';
 export * from './schemas/booking.js';
+export * from './schemas/payment.js';
