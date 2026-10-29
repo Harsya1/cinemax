@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import {
+  batchCreateShowtimeSchema,
   createShowtimeSchema,
   createStudioSchema,
   showtimeListQuerySchema,
@@ -107,6 +108,12 @@ export function createAdminOperationsRouter(
     const input = createShowtimeSchema.parse(req.body);
     const created = await operationsService.createShowtime(req.authUser!.id, input);
     sendSuccess(res, created, 201);
+  });
+
+  router.post('/admin/showtimes/batch', requireRole('admin'), async (req, res) => {
+    const input = batchCreateShowtimeSchema.parse(req.body);
+    const result = await operationsService.createShowtimesBatch(req.authUser!.id, input);
+    sendSuccess(res, result, 201);
   });
 
   router.patch('/admin/showtimes/:id', requireRole('admin'), async (req, res) => {

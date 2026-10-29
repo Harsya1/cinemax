@@ -453,6 +453,42 @@ test('Operations API: Studio CRUD, TMDb auto-sync, and strict schedule conflict 
       }),
     });
     assert.equal(showtimeCOk.status, 201);
+
+    // 7. Multi-Day Batch Showtimes: Monday to Wednesday across different times
+    const batchRes = await fetch(`${baseUrl}/api/v1/admin/showtimes/batch`, {
+      method: 'POST',
+      headers: { Cookie: adminCookie, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        movieId: movieBody.data.id,
+        studioId: 1,
+        defaultPrice: 50000,
+        slots: [
+          { startTime: '2026-11-02T13:00:00.000Z' }, // Monday 13:00
+          { startTime: '2026-11-02T17:00:00.000Z', price: 60000 }, // Monday 17:00
+          { startTime: '2026-11-03T14:00:00.000Z' }, // Tuesday 14:00
+          { startTime: '2026-11-04T18:00:00.000Z' }, // Wednesday 18:00
+        ],
+      }),
+    });
+    assert.equal(batchRes.status, 201);
+    const batchBody = (await batchRes.json()) as { data: { totalCreated: number; showtimes: any[] } };
+    assert.equal(batchBody.data.totalCreated, 4);
+    assert.equal(batchBody.data.showtimes[1].price, 60000);
+
+    // 8. Multi-Day Batch with internal overlap is rejected with 409
+    const batchOverlapRes = await fetch(`${baseUrl}/api/v1/admin/showtimes/batch`, {
+      method: 'POST',
+      headers: { Cookie: adminCookie, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        movieId: movieBody.data.id,
+        studioId: 1,
+        slots: [
+          { startTime: '2026-11-05T13:00:00.000Z' },
+          { startTime: '2026-11-05T14:00:00.000Z' }, // overlap! 13:00 + 159m ends at 15:39
+        ],
+      }),
+    });
+    assert.equal(batchOverlapRes.status, 409);
   } finally {
     await new Promise<void>((resolve, reject) =>
       server.close((err) => (err ? reject(err) : resolve())),

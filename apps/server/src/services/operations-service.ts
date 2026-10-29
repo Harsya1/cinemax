@@ -5,6 +5,8 @@ import {
   type CreateShowtimeInput,
   type CreateStudioInput,
   type MovieRow,
+  type ParsedBatchCreateShowtimeInput,
+  type BatchCreateShowtimeResult,
   type ParsedCreateShowtimeInput,
   type ParsedCreateStudioInput,
   type ParsedUpdateShowtimeInput,
@@ -662,6 +664,109 @@ export function createOperationsService(
       });
 
       return created;
+    },
+
+    async createShowtimesBatch(
+      actorId: number,
+      input: ParsedBatchCreateShowtimeInput,
+    ): Promise<BatchCreateShowtimeResult> {
+      const studio = await store.findStudioById(input.studioId);
+      if (!studio) {
+        throw new AppError(404, 'STUDIO_NOT_FOUND', 'Studio tidak ditemukan');
+      }
+
+      // Resolve movie
+      let movie: MovieRow | null = null;
+      if (input.movieId) {
+        movie = await store.findMovieById(input.movieId);
+      } else if (input.tmdbId) {
+        movie = await store.findMovieByTmdbId(input.tmdbId);
+        if (!movie) {
+          movie = await this.syncMovieByTmdbId(actorId, input.tmdbId);
+        }
+      }
+
+      if (!movie) {
+        throw new AppError(404, 'MOVIE_NOT_FOUND', 'Film tidak ditemukan');
+      }
+
+      const bufferMinutes = 20;
+      const totalDurationMs = (movie.runtimeMinutes + bufferMinutes) * 60 * 1000;
+      const defaultPrice = input.defaultPrice ?? studio.basePrice;
+
+      // 1. Prepare computed slots
+      const computedSlots = input.slots.map((s) => {
+        const start = new Date(s.startTime);
+        const end = new Date(start.getTime() + totalDurationMs);
+        const price = s.price ?? defaultPrice;
+        return { start, end, price };
+      });
+
+      // 2. Validate internal batch conflicts
+      for (let i = 0; i < computedSlots.length; i++) {
+        for (let j = i + 1; j < computedSlots.length; j++) {
+          const a = computedSlots[i]!;
+          const b = computedSlots[j]!;
+          if (a.start.getTime() < b.end.getTime() && a.end.getTime() > b.start.getTime()) {
+            throw new AppError(
+              409,
+              'SCHEDULE_CONFLICT',
+              `Terdapat jadwal yang saling bertabrakan di dalam batch pilihan Anda: ${a.start.toISOString()} dan ${b.start.toISOString()}`,
+            );
+          }
+        }
+      }
+
+      // 3. Validate database conflicts for each slot
+      for (const slot of computedSlots) {
+        const hasConflict = await store.findConflictingShowtime(
+          input.studioId,
+          slot.start,
+          slot.end,
+        );
+        if (hasConflict) {
+          const dateStr = slot.start.toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'short',
+          });
+          const timeStr = slot.start.toLocaleTimeString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+          throw new AppError(
+            409,
+            'SCHEDULE_CONFLICT',
+            `Jadwal tayang pada ${dateStr} pukul ${timeStr} WIB bentrok dengan penayangan lain di ${studio.name}. Berikan jeda pembersihan studio.`,
+          );
+        }
+      }
+
+      // 4. Create all showtimes
+      const createdShowtimes: ShowtimeRow[] = [];
+      for (const slot of computedSlots) {
+        const created = await store.createShowtime({
+          movieId: movie.id,
+          studioId: studio.id,
+          startTime: slot.start,
+          endTime: slot.end,
+          price: slot.price,
+        });
+        createdShowtimes.push(created);
+      }
+
+      await store.recordAudit({
+        actorId,
+        action: 'SHOWTIMES_BATCH_CREATED',
+        targetType: 'studio',
+        targetId: String(studio.id),
+        description: `Menjadwalkan batch ${createdShowtimes.length} penayangan film "${movie.title}" di ${studio.name}`,
+      });
+
+      return {
+        totalCreated: createdShowtimes.length,
+        showtimes: createdShowtimes,
+      };
     },
 
     async updateShowtime(actorId: number, id: number, input: ParsedUpdateShowtimeInput): Promise<ShowtimeRow> {
