@@ -19,6 +19,7 @@ export type PublicMovieSummary = z.infer<typeof publicMovieSummarySchema>;
 
 export const publicNowPlayingResponseSchema = z.object({
   heroMovie: publicMovieSummarySchema.nullable(),
+  trendingMovies: z.array(publicMovieSummarySchema).optional().default([]),
   movies: z.array(publicMovieSummarySchema),
 });
 

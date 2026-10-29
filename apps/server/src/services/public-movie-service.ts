@@ -214,10 +214,22 @@ export function createPublicMovieService(
         // Silently use local list if TMDb fails
       }
 
-      const heroMovie = summaries[0] ?? null;
+      // 3. Determine trending movies for the featured hero banner
+      // Prioritize movies with active showtimes, highest ratings, and valid backdrop images
+      const sortedByTrend = [...summaries].sort((a, b) => {
+        if (a.activeShowtimeCount > 0 && b.activeShowtimeCount === 0) return -1;
+        if (b.activeShowtimeCount > 0 && a.activeShowtimeCount === 0) return 1;
+        return b.voteAverage - a.voteAverage;
+      });
+
+      const withBackdrop = sortedByTrend.filter((m) => Boolean(m.backdropUrl));
+      const trendingMovies =
+        withBackdrop.length > 0 ? withBackdrop.slice(0, 5) : sortedByTrend.slice(0, 5);
+      const heroMovie = trendingMovies[0] ?? summaries[0] ?? null;
 
       return {
         heroMovie,
+        trendingMovies,
         movies: summaries,
       };
     },
