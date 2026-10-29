@@ -12,6 +12,8 @@ import { ComingSoonPage } from './pages/public/ComingSoonPage';
 import { MovieDetailsPage } from './pages/public/MovieDetailsPage';
 import { WatchlistPage } from './pages/public/WatchlistPage';
 import { BookingPage } from './pages/public/BookingPage';
+import { PaymentPage } from './pages/public/PaymentPage';
+import { ProfilePage } from './pages/public/ProfilePage';
 import { CustomerLoginPage } from './pages/auth/CustomerLoginPage';
 import { CustomerRegisterPage } from './pages/auth/CustomerRegisterPage';
 import { StaffLoginPage } from './pages/auth/StaffLoginPage';
@@ -33,9 +35,11 @@ export function App() {
             <Route path="/coming-soon" element={<ComingSoonPage />} />
             <Route path="/movie/:id" element={<MovieDetailsPage />} />
             <Route path="/booking/:showtimeId" element={<BookingPage />} />
+            <Route path="/payment/:bookingCode" element={<PaymentPage />} />
 
             <Route element={<CustomerProtectedRoute />}>
               <Route path="/watchlist" element={<WatchlistPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
 
             <Route element={<GuestOnlyRoute surface="cinema" />}>
