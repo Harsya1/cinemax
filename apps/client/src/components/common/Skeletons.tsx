@@ -6,57 +6,42 @@ export function HeroSkeleton() {
       <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/70 to-transparent" />
 
       <div className="cx-cinema-pattern relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-8 sm:py-24 lg:py-32">
-        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-          {/* Left Column */}
-          <div className="space-y-6 lg:col-span-8">
-            {/* Pill */}
-            <div className="h-7 w-56 rounded-full bg-white/10" />
+        <div className="max-w-3xl space-y-6">
+          {/* Pill */}
+          <div className="h-7 w-56 rounded-full bg-white/10" />
 
-            {/* Title */}
-            <div className="space-y-3">
-              <div className="h-12 sm:h-16 w-3/4 rounded-2xl bg-white/15" />
-              <div className="h-12 sm:h-16 w-1/2 rounded-2xl bg-white/10" />
-            </div>
-
-            {/* Meta badges */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <div className="h-8 w-24 rounded-lg bg-gold-500/15" />
-              <div className="h-8 w-20 rounded-lg bg-white/10" />
-              <div className="h-8 w-24 rounded-lg bg-white/10" />
-              <div className="h-8 w-36 rounded-lg bg-white/10" />
-            </div>
-
-            {/* Genre pills */}
-            <div className="flex gap-2 pt-1">
-              <div className="h-6 w-16 rounded-full bg-white/10" />
-              <div className="h-6 w-20 rounded-full bg-white/10" />
-              <div className="h-6 w-16 rounded-full bg-white/10" />
-            </div>
-
-            {/* Overview lines */}
-            <div className="space-y-2.5 pt-2 max-w-2xl">
-              <div className="h-4 w-full rounded bg-white/10" />
-              <div className="h-4 w-11/12 rounded bg-white/10" />
-              <div className="h-4 w-4/5 rounded bg-white/10" />
-            </div>
-
-            {/* CTA buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-4">
-              <div className="h-13 w-52 rounded-xl bg-gold-500/20" />
-              <div className="h-13 w-44 rounded-xl bg-white/10" />
-            </div>
+          {/* Title */}
+          <div className="space-y-3">
+            <div className="h-12 sm:h-16 w-3/4 rounded-2xl bg-white/15" />
+            <div className="h-12 sm:h-16 w-1/2 rounded-2xl bg-white/10" />
           </div>
 
-          {/* Right Column Experience Box */}
-          <div className="hidden lg:block lg:col-span-4">
-            <div className="rounded-2xl border border-white/10 bg-obsidian-900/60 p-6 space-y-4">
-              <div className="h-4 w-28 rounded bg-white/15" />
-              <div className="space-y-3">
-                <div className="h-16 w-full rounded-xl bg-white/5" />
-                <div className="h-16 w-full rounded-xl bg-white/5" />
-                <div className="h-16 w-full rounded-xl bg-white/5" />
-              </div>
-            </div>
+          {/* Meta badges */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="h-8 w-24 rounded-lg bg-gold-500/15" />
+            <div className="h-8 w-20 rounded-lg bg-white/10" />
+            <div className="h-8 w-24 rounded-lg bg-white/10" />
+            <div className="h-8 w-36 rounded-lg bg-white/10" />
+          </div>
+
+          {/* Genre pills */}
+          <div className="flex gap-2 pt-1">
+            <div className="h-6 w-16 rounded-full bg-white/10" />
+            <div className="h-6 w-20 rounded-full bg-white/10" />
+            <div className="h-6 w-16 rounded-full bg-white/10" />
+          </div>
+
+          {/* Overview lines */}
+          <div className="space-y-2.5 pt-2 max-w-2xl">
+            <div className="h-4 w-full rounded bg-white/10" />
+            <div className="h-4 w-11/12 rounded bg-white/10" />
+            <div className="h-4 w-4/5 rounded bg-white/10" />
+          </div>
+
+          {/* CTA buttons */}
+          <div className="flex flex-wrap items-center gap-4 pt-4">
+            <div className="h-13 w-52 rounded-xl bg-gold-500/20" />
+            <div className="h-13 w-44 rounded-xl bg-white/10" />
           </div>
         </div>
       </div>

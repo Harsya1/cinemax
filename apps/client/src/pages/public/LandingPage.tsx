@@ -103,187 +103,120 @@ export function LandingPage() {
           </div>
 
           {/* Banner Main Content */}
-          <div className="cx-cinema-pattern relative z-10 mx-auto w-full max-w-7xl px-4 py-12 sm:px-8 sm:py-16 lg:py-20">
-            <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
-              {/* Left Column: Movie Spotlight Info */}
-              <div className="space-y-5 lg:col-span-8">
-                {/* Trending Rank Pill */}
-                <div className="inline-flex items-center gap-2.5 rounded-full border border-gold-500/50 bg-obsidian-950/90 px-4 py-1.5 text-xs font-bold tracking-wider text-gold-400 backdrop-blur-md shadow-xl shadow-obsidian-950/80">
-                  <span className="flex h-2 w-2 rounded-full bg-gold-400 animate-pulse" />
-                  <span className="uppercase">
-                    #{activeTrendingIndex + 1} PALING TRENDING DI BIOSKOP HARI INI
-                  </span>
-                </div>
+          <div className="cx-cinema-pattern relative z-10 mx-auto w-full max-w-7xl px-4 py-16 sm:px-8 sm:py-24 lg:py-32">
+            <div className="max-w-3xl space-y-6">
+              {/* Trending Rank Pill */}
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-gold-500/50 bg-obsidian-950/90 px-4 py-1.5 text-xs font-bold tracking-wider text-gold-400 backdrop-blur-md shadow-xl shadow-obsidian-950/80">
+                <span className="flex h-2 w-2 rounded-full bg-gold-400 animate-pulse" />
+                <span className="uppercase">
+                  #{activeTrendingIndex + 1} PALING TRENDING DI BIOSKOP HARI INI
+                </span>
+              </div>
 
-                {/* Movie Title */}
-                <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-2xl leading-none">
-                  {currentHero.title}
-                </h1>
+              {/* Movie Title */}
+              <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-2xl leading-none">
+                {currentHero.title}
+              </h1>
 
-                {/* Metadata & Technical Specs */}
-                <div className="flex flex-wrap items-center gap-3 text-xs font-semibold tabular-nums text-zinc-300">
-                  <span className="flex items-center gap-1.5 rounded-lg border border-gold-500/50 bg-gold-500/15 px-3 py-1 font-bold text-gold-400 backdrop-blur-sm">
-                    <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span>{currentHero.voteAverage.toFixed(1)} / 10 TMDb</span>
-                  </span>
+              {/* Metadata & Technical Specs */}
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold tabular-nums text-zinc-300">
+                <span className="flex items-center gap-1.5 rounded-lg border border-gold-500/50 bg-gold-500/15 px-3 py-1 font-bold text-gold-400 backdrop-blur-sm">
+                  <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <span>{currentHero.voteAverage.toFixed(1)} / 10 TMDb</span>
+                </span>
 
+                <span className="rounded-lg border border-white/15 bg-obsidian-900/80 px-3 py-1 text-zinc-200 backdrop-blur-sm">
+                  {currentHero.runtimeMinutes} Menit
+                </span>
+
+                {currentHero.releaseDate && (
                   <span className="rounded-lg border border-white/15 bg-obsidian-900/80 px-3 py-1 text-zinc-200 backdrop-blur-sm">
-                    {currentHero.runtimeMinutes} Menit
+                    Tahun {currentHero.releaseDate.substring(0, 4)}
                   </span>
+                )}
 
-                  {currentHero.releaseDate && (
-                    <span className="rounded-lg border border-white/15 bg-obsidian-900/80 px-3 py-1 text-zinc-200 backdrop-blur-sm">
-                      Tahun {currentHero.releaseDate.substring(0, 4)}
+                <span className="rounded-lg border border-burgundy-500/50 bg-burgundy-950/70 px-3 py-1 text-gold-300 font-bold uppercase tracking-wider text-[10px] backdrop-blur-sm">
+                  CHRISTIE 4K LASER · DOLBY ATMOS
+                </span>
+              </div>
+
+              {/* Genre Tags */}
+              {currentHero.genres.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-0.5">
+                  {currentHero.genres.map((g) => (
+                    <span
+                      key={g}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-0.5 text-[11px] font-semibold text-zinc-300 backdrop-blur-sm"
+                    >
+                      {g}
                     </span>
-                  )}
-
-                  <span className="rounded-lg border border-burgundy-500/50 bg-burgundy-950/70 px-3 py-1 text-gold-300 font-bold uppercase tracking-wider text-[10px] backdrop-blur-sm">
-                    CHRISTIE 4K LASER · DOLBY ATMOS
-                  </span>
+                  ))}
                 </div>
+              )}
 
-                {/* Genre Tags */}
-                {currentHero.genres.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-0.5">
-                    {currentHero.genres.map((g) => (
-                      <span
-                        key={g}
-                        className="rounded-full border border-white/10 bg-white/5 px-3 py-0.5 text-[11px] font-semibold text-zinc-300 backdrop-blur-sm"
-                      >
-                        {g}
-                      </span>
+              {/* Movie Synopsis */}
+              <p className="max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-200 font-normal line-clamp-3 sm:line-clamp-4 drop-shadow-sm">
+                {currentHero.overview ||
+                  'Saksikan mahakarya sinematik terpopuler ini di layar lebar CINEMAX dengan proyektor laser kristal beresolusi tinggi dan tata suara 360 derajat.'}
+              </p>
+
+              {/* Primary & Secondary Action Buttons */}
+              <div className="flex flex-wrap items-center gap-4 pt-3">
+                <Link
+                  to={`/movie/${currentHero.id}`}
+                  className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 px-7 py-3.5 font-display text-sm font-bold text-obsidian-950 shadow-2xl shadow-gold-500/30 transition-all duration-300 hover:scale-105 hover:from-gold-400 hover:to-gold-500"
+                >
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm2 2v6h12v-6H6z" />
+                  </svg>
+                  <span>Pesan Tiket & Pilih Kursi</span>
+                </Link>
+
+                <Link
+                  to={`/movie/${currentHero.id}`}
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-obsidian-900/70 px-6 py-3.5 font-display text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-gold-500/60 hover:bg-white/10"
+                >
+                  <span>Lihat Jadwal Studio</span>
+                  <span className="text-gold-400">→</span>
+                </Link>
+              </div>
+
+              {/* Subtle Minimal Carousel Controls */}
+              {trendingList.length > 1 && (
+                <div className="flex items-center gap-2 pt-4">
+                  <button
+                    type="button"
+                    onClick={handlePrevTrending}
+                    aria-label="Film sebelumnya"
+                    className="flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 text-xs text-zinc-300 hover:border-gold-500 hover:text-gold-400 transition-colors"
+                  >
+                    ‹
+                  </button>
+                  <div className="flex items-center gap-1.5">
+                    {trendingList.map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setActiveTrendingIndex(idx)}
+                        aria-label={`Slide ke-${idx + 1}`}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          idx === activeTrendingIndex ? 'w-6 bg-gold-500' : 'w-1.5 bg-white/30 hover:bg-white/60'
+                        }`}
+                      />
                     ))}
                   </div>
-                )}
-
-                {/* Movie Synopsis */}
-                <p className="max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-200 font-normal line-clamp-3 sm:line-clamp-4 drop-shadow-sm">
-                  {currentHero.overview ||
-                    'Saksikan mahakarya sinematik terpopuler ini di layar lebar CINEMAX dengan proyektor laser kristal beresolusi tinggi dan tata suara 360 derajat.'}
-                </p>
-
-                {/* Primary & Secondary Action Buttons */}
-                <div className="flex flex-wrap items-center gap-4 pt-3">
-                  <Link
-                    to={`/movie/${currentHero.id}`}
-                    className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 px-7 py-3.5 font-display text-sm font-bold text-obsidian-950 shadow-2xl shadow-gold-500/30 transition-all duration-300 hover:scale-105 hover:from-gold-400 hover:to-gold-500"
+                  <button
+                    type="button"
+                    onClick={handleNextTrending}
+                    aria-label="Film berikutnya"
+                    className="flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 text-xs text-zinc-300 hover:border-gold-500 hover:text-gold-400 transition-colors"
                   >
-                    <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
-                      <path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm2 2v6h12v-6H6z" />
-                    </svg>
-                    <span>Pesan Tiket & Pilih Kursi</span>
-                  </Link>
-
-                  <Link
-                    to={`/movie/${currentHero.id}`}
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-obsidian-900/70 px-6 py-3.5 font-display text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-gold-500/60 hover:bg-white/10"
-                  >
-                    <span>Lihat Jadwal Studio</span>
-                    <span className="text-gold-400">→</span>
-                  </Link>
+                    ›
+                  </button>
                 </div>
-              </div>
-
-              {/* Right Column: Trending Carousel Rail & Controls */}
-              <div className="lg:col-span-4 flex flex-col justify-end space-y-4">
-                {trendingList.length > 1 && (
-                  <div className="rounded-2xl border border-white/15 bg-obsidian-950/80 p-4 backdrop-blur-md shadow-2xl space-y-3">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-gold-400 text-xs font-black">TOP {trendingList.length}</span>
-                        <span className="text-xs font-bold text-white uppercase tracking-wider">
-                          Paling Banyak Dicari
-                        </span>
-                      </div>
-
-                      {/* Previous / Next Arrow Controls */}
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={handlePrevTrending}
-                          aria-label="Film sebelumnya"
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-xs text-zinc-300 hover:border-gold-500 hover:text-gold-400 transition-colors"
-                        >
-                          ‹
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleNextTrending}
-                          aria-label="Film berikutnya"
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-xs text-zinc-300 hover:border-gold-500 hover:text-gold-400 transition-colors"
-                        >
-                          ›
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Trending Film Rail */}
-                    <div className="space-y-2">
-                      {trendingList.map((m, idx) => {
-                        const isSelected = idx === activeTrendingIndex;
-                        return (
-                          <button
-                            key={m.id}
-                            type="button"
-                            onClick={() => setActiveTrendingIndex(idx)}
-                            className={`w-full rounded-xl p-2 text-left transition-all flex items-center gap-3 border ${
-                              isSelected
-                                ? 'border-gold-500/80 bg-gold-500/10 shadow-md ring-1 ring-gold-500/40'
-                                : 'border-white/5 bg-white/5 hover:border-white/20 hover:bg-white/10 opacity-70 hover:opacity-100'
-                            }`}
-                          >
-                            <span
-                              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded font-display text-xs font-black ${
-                                isSelected ? 'bg-gold-500 text-obsidian-950' : 'bg-white/10 text-zinc-400'
-                              }`}
-                            >
-                              {idx + 1}
-                            </span>
-
-                            <div className="h-10 w-14 shrink-0 overflow-hidden rounded bg-obsidian-900 border border-white/10">
-                              {m.backdropUrl || m.posterUrl ? (
-                                <img
-                                  src={m.backdropUrl || m.posterUrl || ''}
-                                  alt={m.title}
-                                  className="h-full w-full object-cover"
-                                />
-                              ) : null}
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <p className={`font-display text-xs font-bold truncate ${isSelected ? 'text-gold-400' : 'text-white'}`}>
-                                {m.title}
-                              </p>
-                              <div className="flex items-center gap-2 text-[10px] text-zinc-400">
-                                <span>★ {m.voteAverage.toFixed(1)}</span>
-                                <span>·</span>
-                                <span>{m.runtimeMinutes}m</span>
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Progress Dots Indicator */}
-                    <div className="flex items-center justify-center gap-1.5 pt-1">
-                      {trendingList.map((_, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setActiveTrendingIndex(idx)}
-                          aria-label={`Slide ke-${idx + 1}`}
-                          className={`h-1.5 rounded-full transition-all duration-300 ${
-                            idx === activeTrendingIndex ? 'w-6 bg-gold-500' : 'w-1.5 bg-white/20 hover:bg-white/40'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
         </section>
