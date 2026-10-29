@@ -12,14 +12,50 @@ export function LandingPage() {
   const [activeTrailerKey, setActiveTrailerKey] = useState<string | null>(null);
   const [trailerTitle, setTrailerTitle] = useState<string>('');
 
+  // Active Trending Banner Index
+  const [activeTrendingIndex, setActiveTrendingIndex] = useState(0);
+  const [isBannerHovered, setIsBannerHovered] = useState(false);
+
   useEffect(() => {
     apiRequest<PublicNowPlayingResponse>('/public/movies/now-playing')
       .then(setData)
       .finally(() => setIsLoading(false));
   }, []);
 
-  const hero = data?.heroMovie ?? null;
   const rawMovies = data?.movies ?? [];
+
+  // Curated Trending Movies list (Top 5)
+  const trendingList = useMemo(() => {
+    if (data?.trendingMovies && data.trendingMovies.length > 0) {
+      return data.trendingMovies;
+    }
+    if (data?.heroMovie) {
+      return [data.heroMovie];
+    }
+    return [];
+  }, [data]);
+
+  // Current Featured Trending Movie
+  const currentHero = trendingList[activeTrendingIndex] ?? trendingList[0] ?? data?.heroMovie ?? null;
+
+  // Auto-rotate trending banner every 7 seconds (pauses on hover)
+  useEffect(() => {
+    if (trendingList.length <= 1 || isBannerHovered) return;
+    const timer = setInterval(() => {
+      setActiveTrendingIndex((prev) => (prev + 1) % trendingList.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, [trendingList.length, isBannerHovered]);
+
+  function handleNextTrending() {
+    if (trendingList.length <= 1) return;
+    setActiveTrendingIndex((prev) => (prev + 1) % trendingList.length);
+  }
+
+  function handlePrevTrending() {
+    if (trendingList.length <= 1) return;
+    setActiveTrendingIndex((prev) => (prev - 1 + trendingList.length) % trendingList.length);
+  }
 
   // Filter movies based on active tab
   const filteredMovies = useMemo(() => {
@@ -34,77 +70,87 @@ export function LandingPage() {
 
   return (
     <div className="space-y-16 pb-24 text-zinc-100">
-      {/* 1. Hero Spotlight Section */}
-      {hero ? (
-        <section className="relative overflow-hidden border-b border-white/10 bg-obsidian-950">
-          {/* Ambient Lighting & Backdrop Layer */}
+      {/* 1. Grand Trending Panoramic Banner Section */}
+      {currentHero ? (
+        <section
+          onMouseEnter={() => setIsBannerHovered(true)}
+          onMouseLeave={() => setIsBannerHovered(false)}
+          className="relative min-h-[580px] sm:min-h-[660px] lg:min-h-[720px] overflow-hidden border-b border-white/10 bg-obsidian-950 flex flex-col justify-end"
+        >
+          {/* Panoramic Backdrop Image Layer */}
           <div className="absolute inset-0 z-0">
-            {hero.backdropUrl ? (
+            {currentHero.backdropUrl ? (
               <img
-                src={hero.backdropUrl}
-                alt={hero.title}
-                className="h-full w-full object-cover object-top opacity-40 filter contrast-125 brightness-90"
+                key={currentHero.id}
+                src={currentHero.backdropUrl}
+                alt={currentHero.title}
+                className="h-full w-full object-cover object-top sm:object-center opacity-75 sm:opacity-85 filter contrast-110 brightness-95 transition-opacity duration-700 ease-out"
               />
             ) : (
-              <div className="h-full w-full bg-gradient-to-br from-burgundy-950/40 via-obsidian-950 to-obsidian-900" />
+              <div className="h-full w-full bg-gradient-to-br from-burgundy-950/70 via-obsidian-950 to-obsidian-900" />
             )}
-            {/* Cinematic Gradient Vignettes */}
-            <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/75 to-obsidian-950/30" />
-            <div className="absolute inset-0 bg-gradient-to-r from-obsidian-950 via-obsidian-950/85 to-transparent" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(136,19,55,0.35),transparent_55%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(245,158,11,0.12),transparent_45%)]" />
+
+            {/* Gradient Overlays for Cinematic Readability */}
+            {/* Left Vignette (Text readable while preserving right-center movie visual) */}
+            <div className="absolute inset-0 bg-gradient-to-r from-obsidian-950 via-obsidian-950/85 to-transparent w-full lg:w-3/4" />
+            {/* Bottom Seamless Fade to Page Surface */}
+            <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-obsidian-950 via-obsidian-950/70 to-transparent" />
+            {/* Top Subtle Vignette */}
+            <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-obsidian-950/80 to-transparent" />
+            {/* Ambient Warm Glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_30%,rgba(136,19,55,0.4),transparent_60%)] pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_85%_75%,rgba(245,158,11,0.15),transparent_50%)] pointer-events-none" />
           </div>
 
-          <div className="cx-cinema-pattern relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-8 sm:py-24 lg:py-32">
-            <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-              {/* Left Column: Hero Content */}
-              <div className="space-y-6 lg:col-span-8">
-                {/* Visual Accent Pill */}
-                <div className="inline-flex items-center gap-2 rounded-full border border-burgundy-500/50 bg-burgundy-950/80 px-4 py-1.5 text-xs font-bold tracking-wider text-gold-400 backdrop-blur-md shadow-lg shadow-burgundy-950/50">
-                  <span className="h-2 w-2 rounded-full bg-gold-400 animate-pulse" />
-                  <span>SPOTLIGHT FILM UNGGULAN HARI INI</span>
+          {/* Banner Main Content */}
+          <div className="cx-cinema-pattern relative z-10 mx-auto w-full max-w-7xl px-4 py-12 sm:px-8 sm:py-16 lg:py-20">
+            <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+              {/* Left Column: Movie Spotlight Info */}
+              <div className="space-y-5 lg:col-span-8">
+                {/* Trending Rank Pill */}
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-gold-500/50 bg-obsidian-950/90 px-4 py-1.5 text-xs font-bold tracking-wider text-gold-400 backdrop-blur-md shadow-xl shadow-obsidian-950/80">
+                  <span className="flex h-2 w-2 rounded-full bg-gold-400 animate-pulse" />
+                  <span className="uppercase">
+                    #{activeTrendingIndex + 1} PALING TRENDING DI BIOSKOP HARI INI
+                  </span>
                 </div>
 
                 {/* Movie Title */}
-                <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-md leading-none">
-                  {hero.title}
+                <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-2xl leading-none">
+                  {currentHero.title}
                 </h1>
 
-                {/* Metadata Badges */}
+                {/* Metadata & Technical Specs */}
                 <div className="flex flex-wrap items-center gap-3 text-xs font-semibold tabular-nums text-zinc-300">
-                  <span className="flex items-center gap-1.5 rounded-lg border border-gold-500/40 bg-gold-500/10 px-3 py-1 font-bold text-gold-400">
-                    <svg
-                      className="h-3.5 w-3.5 fill-current"
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                    >
+                  <span className="flex items-center gap-1.5 rounded-lg border border-gold-500/50 bg-gold-500/15 px-3 py-1 font-bold text-gold-400 backdrop-blur-sm">
+                    <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
-                    <span>{hero.voteAverage.toFixed(1)} / 10</span>
+                    <span>{currentHero.voteAverage.toFixed(1)} / 10 TMDb</span>
                   </span>
 
-                  <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 text-zinc-300">
-                    {hero.runtimeMinutes} Menit
+                  <span className="rounded-lg border border-white/15 bg-obsidian-900/80 px-3 py-1 text-zinc-200 backdrop-blur-sm">
+                    {currentHero.runtimeMinutes} Menit
                   </span>
 
-                  {hero.releaseDate && (
-                    <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 text-zinc-300">
-                      Rilis {hero.releaseDate.substring(0, 4)}
+                  {currentHero.releaseDate && (
+                    <span className="rounded-lg border border-white/15 bg-obsidian-900/80 px-3 py-1 text-zinc-200 backdrop-blur-sm">
+                      Tahun {currentHero.releaseDate.substring(0, 4)}
                     </span>
                   )}
 
-                  <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 text-gold-400 font-bold uppercase tracking-wider text-[10px]">
-                    DOLBY ATMOS · 4K LASER
+                  <span className="rounded-lg border border-burgundy-500/50 bg-burgundy-950/70 px-3 py-1 text-gold-300 font-bold uppercase tracking-wider text-[10px] backdrop-blur-sm">
+                    CHRISTIE 4K LASER · DOLBY ATMOS
                   </span>
                 </div>
 
-                {/* Genre Pills */}
-                {hero.genres.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {hero.genres.map((g) => (
+                {/* Genre Tags */}
+                {currentHero.genres.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-0.5">
+                    {currentHero.genres.map((g) => (
                       <span
                         key={g}
-                        className="rounded-full border border-burgundy-500/30 bg-burgundy-950/40 px-3 py-0.5 text-[11px] font-semibold text-zinc-300"
+                        className="rounded-full border border-white/10 bg-white/5 px-3 py-0.5 text-[11px] font-semibold text-zinc-300 backdrop-blur-sm"
                       >
                         {g}
                       </span>
@@ -112,17 +158,17 @@ export function LandingPage() {
                   </div>
                 )}
 
-                {/* Overview / Synopsis with Controlled Measure */}
-                <p className="max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-300 font-normal line-clamp-3 sm:line-clamp-4">
-                  {hero.overview ||
-                    'Saksikan pertunjukan sinematik spektakuler ini di studio CINEMAX dengan ketajaman proyeksi Christie 4K Laser dan sistem tata suara multi-dimensi.'}
+                {/* Movie Synopsis */}
+                <p className="max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-200 font-normal line-clamp-3 sm:line-clamp-4 drop-shadow-sm">
+                  {currentHero.overview ||
+                    'Saksikan mahakarya sinematik terpopuler ini di layar lebar CINEMAX dengan proyektor laser kristal beresolusi tinggi dan tata suara 360 derajat.'}
                 </p>
 
-                {/* Action CTA Buttons */}
-                <div className="flex flex-wrap items-center gap-4 pt-4">
+                {/* Primary & Secondary Action Buttons */}
+                <div className="flex flex-wrap items-center gap-4 pt-3">
                   <Link
-                    to={`/movie/${hero.id}`}
-                    className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 px-7 py-3.5 font-display text-sm font-bold text-obsidian-950 shadow-xl shadow-gold-500/20 transition-all duration-300 hover:scale-105 hover:from-gold-400 hover:to-gold-500"
+                    to={`/movie/${currentHero.id}`}
+                    className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 px-7 py-3.5 font-display text-sm font-bold text-obsidian-950 shadow-2xl shadow-gold-500/30 transition-all duration-300 hover:scale-105 hover:from-gold-400 hover:to-gold-500"
                   >
                     <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
                       <path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm2 2v6h12v-6H6z" />
@@ -131,63 +177,112 @@ export function LandingPage() {
                   </Link>
 
                   <Link
-                    to={`/movie/${hero.id}`}
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 font-display text-sm font-semibold text-white backdrop-blur-sm transition-all hover:border-gold-500/50 hover:bg-white/10"
+                    to={`/movie/${currentHero.id}`}
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-obsidian-900/70 px-6 py-3.5 font-display text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-gold-500/60 hover:bg-white/10"
                   >
-                    <span>Lihat Jadwal & Detail</span>
+                    <span>Lihat Jadwal Studio</span>
                     <span className="text-gold-400">→</span>
                   </Link>
                 </div>
               </div>
 
-              {/* Right Column: Mini Experience Card */}
-              <div className="hidden lg:block lg:col-span-4">
-                <div className="rounded-2xl border border-white/15 bg-obsidian-900/80 p-6 backdrop-blur-md shadow-2xl space-y-4">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                    <span className="font-display text-xs font-bold uppercase tracking-wider text-gold-400">
-                      STUDIO TERSEDIA
-                    </span>
-                    <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                      Buka Pemesanan
-                    </span>
+              {/* Right Column: Trending Carousel Rail & Controls */}
+              <div className="lg:col-span-4 flex flex-col justify-end space-y-4">
+                {trendingList.length > 1 && (
+                  <div className="rounded-2xl border border-white/15 bg-obsidian-950/80 p-4 backdrop-blur-md shadow-2xl space-y-3">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gold-400 text-xs font-black">TOP {trendingList.length}</span>
+                        <span className="text-xs font-bold text-white uppercase tracking-wider">
+                          Paling Banyak Dicari
+                        </span>
+                      </div>
+
+                      {/* Previous / Next Arrow Controls */}
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={handlePrevTrending}
+                          aria-label="Film sebelumnya"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-xs text-zinc-300 hover:border-gold-500 hover:text-gold-400 transition-colors"
+                        >
+                          ‹
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleNextTrending}
+                          aria-label="Film berikutnya"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-xs text-zinc-300 hover:border-gold-500 hover:text-gold-400 transition-colors"
+                        >
+                          ›
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Trending Film Rail */}
+                    <div className="space-y-2">
+                      {trendingList.map((m, idx) => {
+                        const isSelected = idx === activeTrendingIndex;
+                        return (
+                          <button
+                            key={m.id}
+                            type="button"
+                            onClick={() => setActiveTrendingIndex(idx)}
+                            className={`w-full rounded-xl p-2 text-left transition-all flex items-center gap-3 border ${
+                              isSelected
+                                ? 'border-gold-500/80 bg-gold-500/10 shadow-md ring-1 ring-gold-500/40'
+                                : 'border-white/5 bg-white/5 hover:border-white/20 hover:bg-white/10 opacity-70 hover:opacity-100'
+                            }`}
+                          >
+                            <span
+                              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded font-display text-xs font-black ${
+                                isSelected ? 'bg-gold-500 text-obsidian-950' : 'bg-white/10 text-zinc-400'
+                              }`}
+                            >
+                              {idx + 1}
+                            </span>
+
+                            <div className="h-10 w-14 shrink-0 overflow-hidden rounded bg-obsidian-900 border border-white/10">
+                              {m.backdropUrl || m.posterUrl ? (
+                                <img
+                                  src={m.backdropUrl || m.posterUrl || ''}
+                                  alt={m.title}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : null}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-display text-xs font-bold truncate ${isSelected ? 'text-gold-400' : 'text-white'}`}>
+                                {m.title}
+                              </p>
+                              <div className="flex items-center gap-2 text-[10px] text-zinc-400">
+                                <span>★ {m.voteAverage.toFixed(1)}</span>
+                                <span>·</span>
+                                <span>{m.runtimeMinutes}m</span>
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Progress Dots Indicator */}
+                    <div className="flex items-center justify-center gap-1.5 pt-1">
+                      {trendingList.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setActiveTrendingIndex(idx)}
+                          aria-label={`Slide ke-${idx + 1}`}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            idx === activeTrendingIndex ? 'w-6 bg-gold-500' : 'w-1.5 bg-white/20 hover:bg-white/40'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-
-                  <div className="space-y-3 text-xs">
-                    <div className="rounded-xl border border-white/5 bg-white/5 p-3 space-y-1">
-                      <div className="flex justify-between font-bold text-white">
-                        <span>Premier Velvet Class</span>
-                        <span className="text-gold-400">Rp 100.000</span>
-                      </div>
-                      <p className="text-[11px] text-zinc-400">
-                        Motorized Recliner, blanket & in-seat food service.
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl border border-white/5 bg-white/5 p-3 space-y-1">
-                      <div className="flex justify-between font-bold text-white">
-                        <span>Studio 3D RealD</span>
-                        <span className="text-gold-400">Rp 65.000</span>
-                      </div>
-                      <p className="text-[11px] text-zinc-400">
-                        Stereoscopic active laser 3D & immersive surround.
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl border border-white/5 bg-white/5 p-3 space-y-1">
-                      <div className="flex justify-between font-bold text-white">
-                        <span>Studio 1 Regular Deluxe</span>
-                        <span className="text-gold-400">Rp 50.000</span>
-                      </div>
-                      <p className="text-[11px] text-zinc-400">
-                        Dolby Atmos 7.1, stadium seating & extra legroom.
-                      </p>
-                    </div>
-                  </div>
-
-                  <p className="text-center text-[10px] text-zinc-400 pt-1">
-                    Dapatkan poin loyalitas hingga 15 pts per lembar tiket.
-                  </p>
-                </div>
+                )}
               </div>
             </div>
           </div>
