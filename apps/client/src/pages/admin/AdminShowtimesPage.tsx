@@ -504,8 +504,8 @@ export function AdminShowtimesPage() {
                   <input
                     id="st-price"
                     type="number"
-                    min={1000}
-                    step={5000}
+                    min={0}
+                    step="any"
                     required
                     value={formPrice}
                     onChange={(e) => setFormPrice(Number(e.target.value))}

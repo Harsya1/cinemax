@@ -370,8 +370,8 @@ export function AdminStudiosPage() {
                   <input
                     id="std-price"
                     type="number"
-                    min={1000}
-                    step={5000}
+                    min={0}
+                    step="any"
                     required
                     value={basePrice}
                     onChange={(e) => setBasePrice(Number(e.target.value))}

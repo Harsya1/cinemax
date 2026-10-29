@@ -457,7 +457,8 @@ export function TicketPosPage() {
                 <input
                   id="pos-cash-input"
                   type="number"
-                  step={5000}
+                  min={0}
+                  step="any"
                   value={amountPaid}
                   onChange={(e) => setAmountPaid(e.target.value ? Number(e.target.value) : '')}
                   placeholder={`Min. ${totalPrice.toLocaleString('id-ID')}`}
