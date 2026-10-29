@@ -8,6 +8,7 @@ import { createPublicMoviesRouter } from './routes/public-movies.js';
 import { createBookingRouter } from './routes/booking.js';
 import { createPaymentRouter } from './routes/payment.js';
 import { createProfileRouter } from './routes/profile.js';
+import { createPosTicketRouter } from './routes/pos-ticket.js';
 import { createAuthService, type AuthService } from './services/auth-service.js';
 import {
   createAdminUserService,
@@ -29,6 +30,10 @@ import {
   createPaymentService,
   type PaymentService,
 } from './services/payment-service.js';
+import {
+  createTicketPosService,
+  type TicketPosService,
+} from './services/ticket-pos-service.js';
 import { createTmdbClient, type TmdbClient } from './services/tmdb-service.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
@@ -40,6 +45,7 @@ export interface AppDependencies {
   publicMovieService?: PublicMovieService;
   bookingService?: BookingService;
   paymentService?: PaymentService;
+  ticketPosService?: TicketPosService;
   tmdbClient?: TmdbClient;
   secureCookie?: boolean;
 }
@@ -55,6 +61,7 @@ export function createApp(deps: AppDependencies = {}): Express {
     deps.publicMovieService ?? createPublicMovieService(undefined, tmdbClient);
   const bookingService = deps.bookingService ?? createBookingService();
   const paymentService = deps.paymentService ?? createPaymentService();
+  const ticketPosService = deps.ticketPosService ?? createTicketPosService();
   const secureCookie = deps.secureCookie ?? process.env.NODE_ENV === 'production';
 
   app.disable('x-powered-by');
@@ -68,6 +75,7 @@ export function createApp(deps: AppDependencies = {}): Express {
   app.use('/api/v1', createBookingRouter(authService, bookingService, secureCookie));
   app.use('/api/v1', createPaymentRouter(authService, paymentService, secureCookie));
   app.use('/api/v1', createProfileRouter(authService, paymentService, secureCookie));
+  app.use('/api/v1', createPosTicketRouter(authService, ticketPosService, secureCookie));
 
   app.use(notFoundHandler);
   app.use(errorHandler);
