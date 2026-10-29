@@ -200,6 +200,30 @@ export const createShowtimeSchema = z
 export type CreateShowtimeInput = z.input<typeof createShowtimeSchema>;
 export type ParsedCreateShowtimeInput = z.output<typeof createShowtimeSchema>;
 
+export const batchCreateShowtimeSlotSchema = z.object({
+  startTime: z.string().datetime({ message: 'Format waktu mulai tidak valid (ISO datetime)' }),
+  price: z.coerce.number().int().positive().optional(),
+});
+
+export const batchCreateShowtimeSchema = z
+  .object({
+    movieId: z.coerce.number().int().positive().optional(),
+    tmdbId: z.coerce.number().int().positive().optional(),
+    studioId: z.coerce.number().int().positive('Studio wajib dipilih'),
+    defaultPrice: z.coerce.number().int().positive('Harga tiket harus valid').optional(),
+    slots: z
+      .array(batchCreateShowtimeSlotSchema)
+      .min(1, 'Minimal sertakan 1 jadwal penayangan')
+      .max(50, 'Maksimal 50 jadwal per batch'),
+  })
+  .refine((data) => Boolean(data.movieId || data.tmdbId), {
+    message: 'movieId atau tmdbId harus disertakan',
+    path: ['tmdbId'],
+  });
+
+export type BatchCreateShowtimeInput = z.input<typeof batchCreateShowtimeSchema>;
+export type ParsedBatchCreateShowtimeInput = z.output<typeof batchCreateShowtimeSchema>;
+
 export const updateShowtimeSchema = z.object({
   studioId: z.coerce.number().int().positive().optional(),
   startTime: z.string().datetime().optional(),
@@ -234,3 +258,10 @@ export const showtimeRowSchema = z.object({
 });
 
 export type ShowtimeRow = z.infer<typeof showtimeRowSchema>;
+
+export const batchCreateShowtimeResultSchema = z.object({
+  totalCreated: z.number().int().nonnegative(),
+  showtimes: z.array(showtimeRowSchema),
+});
+
+export type BatchCreateShowtimeResult = z.infer<typeof batchCreateShowtimeResultSchema>;

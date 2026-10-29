@@ -19,6 +19,7 @@ import {
   buildTmdbImageUrl,
   createStudioSchema,
   createShowtimeSchema,
+  batchCreateShowtimeSchema,
   publicMovieDetailSchema,
   publicNowPlayingResponseSchema,
   holdSeatsInputSchema,
@@ -184,6 +185,18 @@ test('operations helpers and schemas calculate seat layouts and validate showtim
     startTime: '2026-11-01T14:00:00Z',
   });
   assert.equal(invalidShowtime.success, false);
+
+  const batchShowtime = batchCreateShowtimeSchema.safeParse({
+    tmdbId: 550,
+    studioId: 1,
+    defaultPrice: 50000,
+    slots: [
+      { startTime: '2026-11-02T13:00:00.000Z' },
+      { startTime: '2026-11-02T16:30:00.000Z', price: 55000 },
+      { startTime: '2026-11-03T14:00:00.000Z' },
+    ],
+  });
+  assert.equal(batchShowtime.success, true);
 });
 
 test('public movies schemas validate now playing and movie detail structures', () => {
