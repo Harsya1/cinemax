@@ -26,6 +26,8 @@ import {
   paymentProcessSchema,
   calculatePointsEarned,
   customerProfileUpdateSchema,
+  posCheckoutInputSchema,
+  posCheckoutResultSchema,
 } from '../index.js';
 
 test('BRAND exposes CINEMAX identity and booking prefix', () => {
@@ -317,4 +319,42 @@ test('payment schemas and point calculators validate payment methods and points 
   });
   assert.equal(profileUpdate.name, 'Budi Baru');
   assert.equal(profileUpdate.newPassword, 'NewPassword123!');
+});
+
+test('pos schemas validate cashier checkout input (up to 10 seats) and stub format', () => {
+  const validCheckout = posCheckoutInputSchema.parse({
+    showtimeId: 1,
+    seatCodes: ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7'],
+    paymentMethod: 'cash',
+    amountPaid: 500000,
+    memberEmail: 'vip@cinemax.local',
+  });
+  assert.equal(validCheckout.seatCodes.length, 7);
+  assert.equal(validCheckout.seatCodes[0], 'A1');
+  assert.equal(validCheckout.paymentMethod, 'cash');
+
+  const stubTest = posCheckoutResultSchema.parse({
+    bookingCode: 'CX-POS123',
+    totalPrice: 100000,
+    amountPaid: 150000,
+    change: 50000,
+    seatCodes: ['A1', 'A2'],
+    pointsEarned: 20,
+    stub: {
+      bookingCode: 'CX-POS123',
+      movieTitle: 'Fight Club',
+      studioName: 'Studio 1 Regular',
+      studioType: 'regular',
+      dateFormatted: 'Kamis, 29 Okt 2026',
+      timeFormatted: '14:00 WIB',
+      seatCodes: ['A1', 'A2'],
+      totalSeats: 2,
+      totalPrice: 100000,
+      paymentMethod: 'CASH',
+      cashierName: 'Ticket Cashier',
+      paidAtFormatted: '29/10/2026 13:45',
+      qrUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CX-POS123',
+    },
+  });
+  assert.equal(stubTest.change, 50000);
 });

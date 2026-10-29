@@ -7,3 +7,4 @@ export * from './schemas/operations.js';
 export * from './schemas/public-movies.js';
 export * from './schemas/booking.js';
 export * from './schemas/payment.js';
+export * from './schemas/pos.js';
