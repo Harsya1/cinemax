@@ -26,8 +26,11 @@ import {
   paymentProcessSchema,
   calculatePointsEarned,
   customerProfileUpdateSchema,
+  dashboardSummarySchema,
   posCheckoutInputSchema,
   posCheckoutResultSchema,
+  ticketScanInputSchema,
+  ticketScanResultSchema,
 } from '../index.js';
 
 test('BRAND exposes CINEMAX identity and booking prefix', () => {
@@ -357,4 +360,54 @@ test('pos schemas validate cashier checkout input (up to 10 seats) and stub form
     },
   });
   assert.equal(stubTest.change, 50000);
+});
+
+test('validator and dashboard schemas parse scan results and summary KPI payloads', () => {
+  const scanInput = ticketScanInputSchema.parse({ bookingCode: 'cx-abc999' });
+  assert.equal(scanInput.bookingCode, 'CX-ABC999');
+
+  const validScan = ticketScanResultSchema.parse({
+    result: 'valid',
+    message: 'Tiket valid! Silakan masuk studio.',
+    ticket: {
+      bookingCode: 'CX-ABC999',
+      movieTitle: 'Inception',
+      studioName: 'Studio 2 3D',
+      studioType: '3d',
+      startTime: '2026-10-29T14:00:00.000Z',
+      seatCodes: ['C1', 'C2'],
+      totalSeats: 2,
+      redeemedAt: '2026-10-29T13:55:00.000Z',
+      redeemedByName: 'Door Usher',
+    },
+  });
+  assert.equal(validScan.result, 'valid');
+
+  const summary = dashboardSummarySchema.parse({
+    todayRevenue: 2500000,
+    todayTicketsSold: 35,
+    todayCheckInCount: 20,
+    occupancyRatePercent: 42.5,
+    todayStudios: [
+      {
+        studioId: 1,
+        studioName: 'Studio 1 Regular',
+        studioType: 'regular',
+        activeShowtimesCount: 3,
+        totalSeats: 88,
+        occupiedSeats: 40,
+        occupancyPercent: 45.45,
+      },
+    ],
+    recentActivity: [
+      {
+        id: 1,
+        action: 'BOOKING_REDEEMED',
+        actorName: 'Usher',
+        description: 'Tiket CX-ABC999 di-scan masuk',
+        createdAt: '2026-10-29T13:55:00.000Z',
+      },
+    ],
+  });
+  assert.equal(summary.todayRevenue, 2500000);
 });

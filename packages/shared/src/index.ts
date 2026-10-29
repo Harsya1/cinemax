@@ -8,3 +8,5 @@ export * from './schemas/public-movies.js';
 export * from './schemas/booking.js';
 export * from './schemas/payment.js';
 export * from './schemas/pos.js';
+export * from './schemas/validator.js';
+export * from './schemas/dashboard.js';
