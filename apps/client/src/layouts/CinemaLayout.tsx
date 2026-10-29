@@ -58,9 +58,12 @@ export function CinemaLayout() {
                     Workspace ({user.role})
                   </Link>
                 ) : (
-                  <span className="rounded-full border border-white/10 bg-surface px-3 py-1 text-xs font-semibold text-gold-400 tabular-nums">
+                  <Link
+                    to="/profile"
+                    className="rounded-full border border-white/10 bg-surface px-3 py-1 text-xs font-semibold text-gold-400 hover:border-gold-500/50 tabular-nums transition-colors"
+                  >
                     {user.name} · {user.points} pts
-                  </span>
+                  </Link>
                 )}
                 <button
                   type="button"
