@@ -6,6 +6,8 @@ import { createAdminUsersRouter } from './routes/admin-users.js';
 import { createAdminOperationsRouter } from './routes/admin-operations.js';
 import { createPublicMoviesRouter } from './routes/public-movies.js';
 import { createBookingRouter } from './routes/booking.js';
+import { createPaymentRouter } from './routes/payment.js';
+import { createProfileRouter } from './routes/profile.js';
 import { createAuthService, type AuthService } from './services/auth-service.js';
 import {
   createAdminUserService,
@@ -23,6 +25,10 @@ import {
   createBookingService,
   type BookingService,
 } from './services/booking-service.js';
+import {
+  createPaymentService,
+  type PaymentService,
+} from './services/payment-service.js';
 import { createTmdbClient, type TmdbClient } from './services/tmdb-service.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
@@ -33,6 +39,7 @@ export interface AppDependencies {
   operationsService?: OperationsService;
   publicMovieService?: PublicMovieService;
   bookingService?: BookingService;
+  paymentService?: PaymentService;
   tmdbClient?: TmdbClient;
   secureCookie?: boolean;
 }
@@ -47,6 +54,7 @@ export function createApp(deps: AppDependencies = {}): Express {
   const publicMovieService =
     deps.publicMovieService ?? createPublicMovieService(undefined, tmdbClient);
   const bookingService = deps.bookingService ?? createBookingService();
+  const paymentService = deps.paymentService ?? createPaymentService();
   const secureCookie = deps.secureCookie ?? process.env.NODE_ENV === 'production';
 
   app.disable('x-powered-by');
@@ -58,6 +66,8 @@ export function createApp(deps: AppDependencies = {}): Express {
   app.use('/api/v1', createAdminOperationsRouter(authService, operationsService, secureCookie));
   app.use('/api/v1', createPublicMoviesRouter(authService, publicMovieService, secureCookie));
   app.use('/api/v1', createBookingRouter(authService, bookingService, secureCookie));
+  app.use('/api/v1', createPaymentRouter(authService, paymentService, secureCookie));
+  app.use('/api/v1', createProfileRouter(authService, paymentService, secureCookie));
 
   app.use(notFoundHandler);
   app.use(errorHandler);
