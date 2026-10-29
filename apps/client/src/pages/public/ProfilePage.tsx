@@ -4,6 +4,7 @@ import type { CustomerBookingSummary, WatchlistRow } from '@cinemax/shared';
 import { useAuth } from '../../context/AuthContext';
 import { ApiClientError, apiRequest } from '../../lib/api';
 import { ETicketModal } from '../../components/public/ETicketModal';
+import { TicketListSkeleton } from '../../components/common/Skeletons';
 
 export function ProfilePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -212,7 +213,7 @@ export function ProfilePage() {
             </h2>
 
             {isLoadingTickets ? (
-              <div className="py-12 text-center text-xs text-muted">Memuat tiket Anda...</div>
+              <TicketListSkeleton />
             ) : activeTickets.length === 0 ? (
               <div className="rounded-2xl border border-white/10 bg-surface p-10 text-center space-y-3">
                 <p className="text-sm font-semibold text-white">Tidak ada tiket aktif saat ini</p>

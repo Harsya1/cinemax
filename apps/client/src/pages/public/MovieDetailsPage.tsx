@@ -4,6 +4,7 @@ import type { PublicMovieDetail } from '@cinemax/shared';
 import { useAuth } from '../../context/AuthContext';
 import { ApiClientError, apiRequest } from '../../lib/api';
 import { TrailerModal } from '../../components/public/TrailerModal';
+import { MovieDetailsSkeleton } from '../../components/common/Skeletons';
 
 export function MovieDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -61,11 +62,7 @@ export function MovieDetailsPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center text-sm text-muted">
-        Memuat detail film sinematik...
-      </div>
-    );
+    return <MovieDetailsSkeleton />;
   }
 
   if (error || !movie) {

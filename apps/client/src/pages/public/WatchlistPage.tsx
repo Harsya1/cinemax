@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { WatchlistRow } from '@cinemax/shared';
 import { apiRequest } from '../../lib/api';
+import { MovieGridSkeleton } from '../../components/common/Skeletons';
 
 export function WatchlistPage() {
   const [items, setItems] = useState<WatchlistRow[]>([]);
@@ -50,14 +51,7 @@ export function WatchlistPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="aspect-[2/3] w-full animate-pulse rounded-2xl bg-surface border border-white/5"
-            />
-          ))}
-        </div>
+        <MovieGridSkeleton count={5} />
       ) : items.length === 0 ? (
         <div className="rounded-2xl border border-white/10 bg-surface p-16 text-center space-y-4">
           <p className="text-base font-semibold text-white">Watchlist Anda masih kosong</p>

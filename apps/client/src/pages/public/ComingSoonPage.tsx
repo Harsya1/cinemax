@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { PublicComingSoonResponse, PublicMovieSummary } from '@cinemax/shared';
 import { apiRequest } from '../../lib/api';
+import { MovieGridSkeleton } from '../../components/common/Skeletons';
 
 export function ComingSoonPage() {
   const [movies, setMovies] = useState<PublicMovieSummary[]>([]);
@@ -28,14 +29,7 @@ export function ComingSoonPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div
-              key={i}
-              className="aspect-[2/3] w-full animate-pulse rounded-2xl bg-surface border border-white/5"
-            />
-          ))}
-        </div>
+        <MovieGridSkeleton count={10} />
       ) : movies.length === 0 ? (
         <div className="py-20 text-center text-sm text-muted">
           Belum ada informasi film mendatang.

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { PublicMovieSummary, PublicNowPlayingResponse } from '@cinemax/shared';
 import { apiRequest } from '../../lib/api';
 import { TrailerModal } from '../../components/public/TrailerModal';
+import { HeroSkeleton, MovieGridSkeleton } from '../../components/common/Skeletons';
 
 export function LandingPage() {
   const [data, setData] = useState<PublicNowPlayingResponse | null>(null);
@@ -192,9 +193,7 @@ export function LandingPage() {
           </div>
         </section>
       ) : isLoading ? (
-        <div className="flex h-96 items-center justify-center text-sm text-zinc-500">
-          Menyiapkan pengalaman sinematik CINEMAX...
-        </div>
+        <HeroSkeleton />
       ) : null}
 
       {/* 2. Now Playing Movie Section */}
@@ -250,14 +249,7 @@ export function LandingPage() {
 
         {/* Movies Grid */}
         {isLoading ? (
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-[2/3] w-full animate-pulse rounded-2xl bg-white/5 border border-white/10"
-              />
-            ))}
-          </div>
+          <MovieGridSkeleton count={5} />
         ) : filteredMovies.length === 0 ? (
           <div className="py-24 text-center rounded-2xl border border-white/10 bg-obsidian-900/50 p-8 space-y-3">
             <p className="font-display text-base font-bold text-white">
