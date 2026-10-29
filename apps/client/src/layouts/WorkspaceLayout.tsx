@@ -8,6 +8,7 @@ export function WorkspaceLayout() {
   const canAccessOperations =
     user?.role === 'admin' || user?.role === 'manager' || user?.role === 'cashier';
   const canAccessStudios = canAccessOperations || user?.role === 'cleaner';
+  const canAccessValidator = canAccessOperations || user?.role === 'staff';
 
   async function handleLogout() {
     await logout();
@@ -77,6 +78,11 @@ export function WorkspaceLayout() {
               {canAccessOperations && (
                 <NavLink to="/pos/ticket" className={navClass}>
                   Ticket POS
+                </NavLink>
+              )}
+              {canAccessValidator && (
+                <NavLink to="/admin/validator" className={navClass}>
+                  Validator Pintu
                 </NavLink>
               )}
             </>

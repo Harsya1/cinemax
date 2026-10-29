@@ -24,6 +24,7 @@ import { AdminStudiosPage } from './pages/admin/AdminStudiosPage';
 import { AdminTmdbBrowserPage } from './pages/admin/AdminTmdbBrowserPage';
 import { AdminShowtimesPage } from './pages/admin/AdminShowtimesPage';
 import { TicketPosPage } from './pages/admin/TicketPosPage';
+import { TicketValidatorPage } from './pages/admin/TicketValidatorPage';
 
 export function App() {
   return (
@@ -81,6 +82,16 @@ export function App() {
                 <Route path="/admin/movies" element={<AdminTmdbBrowserPage />} />
                 <Route path="/admin/showtimes" element={<AdminShowtimesPage />} />
                 <Route path="/pos/ticket" element={<TicketPosPage />} />
+              </Route>
+
+              <Route
+                element={
+                  <StaffProtectedRoute
+                    allowedRoles={['admin', 'manager', 'cashier', 'staff']}
+                  />
+                }
+              >
+                <Route path="/admin/validator" element={<TicketValidatorPage />} />
               </Route>
             </Route>
           </Route>
