@@ -1,0 +1,23 @@
+{
+  "name": "cinemax-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build:shared": "npm -w @cinemax/shared run build",
+    "build": "npm run build:shared && npm -w @cinemax/server run build && npm -w @cinemax/client run build",
+    "dev:server": "npm -w @cinemax/server run dev",
+    "dev:client": "npm -w @cinemax/client run dev",
+    "db:generate": "npm -w @cinemax/server run db:generate",
+    "db:migrate": "npm -w @cinemax/server run db:migrate",
+    "db:seed": "npm -w @cinemax/server run db:seed",
+    "test": "npm run build:shared && npm -w @cinemax/shared test && npm -w @cinemax/server test",
+    "typecheck": "npm run build:shared && npm -w @cinemax/server run typecheck && npm -w @cinemax/client run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}
