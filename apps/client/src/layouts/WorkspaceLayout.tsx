@@ -74,15 +74,13 @@ export function WorkspaceLayout() {
                   Showtimes Schedule
                 </NavLink>
               )}
+              {canAccessOperations && (
+                <NavLink to="/pos/ticket" className={navClass}>
+                  Ticket POS
+                </NavLink>
+              )}
             </>
           )}
-
-          <div className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Upcoming Modules
-          </div>
-          <div className="rounded-lg px-3 py-2 font-medium text-slate-400">
-            Ticket POS (Plan 09)
-          </div>
         </nav>
 
         <div className="space-y-2 border-t border-slate-200 p-4">

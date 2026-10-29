@@ -23,6 +23,7 @@ import { AdminAuditLogsPage } from './pages/admin/AdminAuditLogsPage';
 import { AdminStudiosPage } from './pages/admin/AdminStudiosPage';
 import { AdminTmdbBrowserPage } from './pages/admin/AdminTmdbBrowserPage';
 import { AdminShowtimesPage } from './pages/admin/AdminShowtimesPage';
+import { TicketPosPage } from './pages/admin/TicketPosPage';
 
 export function App() {
   return (
@@ -79,6 +80,7 @@ export function App() {
               >
                 <Route path="/admin/movies" element={<AdminTmdbBrowserPage />} />
                 <Route path="/admin/showtimes" element={<AdminShowtimesPage />} />
+                <Route path="/pos/ticket" element={<TicketPosPage />} />
               </Route>
             </Route>
           </Route>
